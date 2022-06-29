@@ -48,6 +48,7 @@ class point {
 
         ~point() {
             // since all data members are static, data cleanup is implicit
+            std::cout << "Object deallocated" << std::endl;
         }
 
         // ************** overloaded operators **************

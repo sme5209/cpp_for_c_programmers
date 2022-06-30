@@ -1,78 +1,99 @@
-#include <iostream>
-#include <vector>
-#include <random>
+#include "graph.h"
 
-class Node {
-    private:
+// node data structure methods
 
-    public:
-};
+void Graph::Node::add_neighbor(Node *y, double v) {
+    neighbors.insert(std::pair<Node*, double>(y, v));
+}
 
-class Graph {
-    private:
+void Graph::Node::remove_neighbor(Node *y) {
+    neighbors.erase(y);
+}
 
-    public:
-        // constructor(s)
-        Graph() {}  
+bool Graph::Node::has_neighbor(Node *y) {
+    return (neighbors.find(y) != neighbors.end());
+}
 
-        // destructor
-        ~Graph();
+int Graph::Node::get_edge(Node *y) {
+}
 
-        // returns number of vertices in graph
-        int V();
-        // returns number of edges in graph
-        int E();
-        // tests whether there is an edge from node x to node y
-        bool is_adjacent(Node x, Node y);
-        // lists all nodes y such that there is an edge from x to y
-        std::vector<Node> neighbors(Node x);
-        // adds to G the edge from x to y, if it is not there
-        void add_edge(Node x, Node y);
-        // removes the edge from x to y, if it is there
-        void delete_edge(Node x, Node y);
-        // returns the value associated with the node x
-        int get_node_value(Node x);
-        // sets the value associated with the node x to a
-        void set_node_value(Node x, int a);
-        // returns the value associated to the edge (x,y)
-        int get_edge_value(Node x, Node y);
-        // sets the value associated with the edge (x,y) to v
-        void set_edge_value(Node x, Node y, int v);
-};
+void Graph::Node::set_edge(Node *y) {
 
-class PriorityQueue {
-    private:
+}
 
-    public:
-        // constructor(s)
-        PriorityQueue() {}
+std::vector<int> Graph::Node::list_neighbors() {
+    std::vector<int> neighbor_ids(neighbors.size());
+    for (std::pair<Node*, double> neighbor : neighbors) {
+        neighbor_ids.emplace_back(neighbor.first->id);
+    }
+    // TODO: figure out if this works or goes out of scope
+    return std::move(neighbor_ids);
+}
 
-        // destructor
-        ~PriorityQueue();
+// graph data structure methods
 
-        // changes the priority (node value) of queue element
-        void change_priority(int priority);
-        // removes the top element of the queue
-        Node pop();
-        // checks if the queue contains the given element
-        bool contains(Node element);
-        // insert queue_element into queue
-        void insert(Node element);
-        // returns the top element of the queue
-        Node top();
-        // return the number of elements in queue
-        int size();
-};
+// TODO: perform input validation
+Graph::Graph(int total_vertices, double edge_density, double min_cost, double max_cost) :
+        total_vertices(total_vertices) {
+    // preallocate space for vector (should improve performance)
+    vertices.reserve(total_vertices);
 
-class ShortestPath {
-    private:
+    // uniform distribution setup
+    std::random_device rand;
+    std::default_random_engine generator(rand());
+    std::uniform_real_distribution<double> density_dist;
+    std::uniform_real_distribution<double> edge_dist(min_cost, max_cost);
 
-    public:
-        // list of vertices in G(V,E)
-        std::vector<Node> vertices(Graph G);
-        // find shortest path between u-w and returns the sequence of vertices representing shorest path u-v1-v2-…-vn-w
-        std::vector<Node> path(Node u, Node w);
-        // return the path cost associated with the shortest path
-        int path_size(Node u, Node w);
+    int expected_neighbors = static_cast<int>(round(total_vertices * edge_density));
 
-};
+    // first fill vector with vertices
+    for (int i = 0; i < total_vertices; i++) {
+        vertices.emplace_back(i, expected_neighbors);
+    }
+    // then loop back through vector and add edges
+    int count = 0;
+    for (int i = 0; i < total_vertices; i++) {
+        for (int j = 0; j < total_vertices; j++) {
+            if (i != j && density_dist(generator) < edge_density) {
+                count += 1;
+                double cost = edge_dist(generator);
+                vertices[i].add_neighbor(&vertices[j], cost);
+                vertices[j].add_neighbor(&vertices[i], cost);
+            }
+        }
+    }
+    total_edges = count;
+}
+
+int Graph::V() const {
+    return total_vertices;
+}
+
+int Graph::E() const {
+    return total_edges;
+}
+
+bool Graph::is_adjacent(int x, int y) {
+    return vertices.at(x).has_neighbor(&vertices.at(y));
+}
+
+std::vector<int> Graph::list_neighbors(int x) {
+    return vertices.at(x).list_neighbors();
+}
+
+void Graph::add_edge(int x, int y, int v) {
+    vertices.at(x).add_neighbor(&vertices.at(y), v);
+    vertices.at(y).add_neighbor(&vertices.at(x), v);
+}
+
+void Graph::remove_edge(int x, int y) {
+    vertices.at(x).remove_neighbor(&vertices.at(y));
+    vertices.at(y).remove_neighbor(&vertices.at(x));
+}
+
+int Graph::get_edge_value(int x, int y) {
+
+}
+
+
+

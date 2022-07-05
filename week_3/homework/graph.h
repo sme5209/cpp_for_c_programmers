@@ -29,12 +29,12 @@ class Graph {
             // removes the edge to node y
             void remove_neighbor(Node *y);
             // checks if node has neighbor node y
-            bool has_neighbor(Node *y);
-            std::vector<int> list_neighbors();
+            bool has_neighbor(Node *y) const;
+            std::vector<int> list_neighbors() const;
             // gets the cost associated with edge to node y
-            int get_edge(Node *y);
+            double get_edge(Node *y) const;
             // sets the cost associated with edge to node y
-            void set_edge(Node *y);
+            void set_edge(Node *y, double v);
         };
         std::vector<Node> vertices;
         int total_vertices{};
@@ -54,15 +54,15 @@ class Graph {
         // tests whether there is an edge from node x to node y
         bool is_adjacent(int x, int y);
         // lists all nodes y such that there is an edge from x to y
-        std::vector<int> list_neighbors(int x);
+        std::vector<int> list_neighbors(int x) const;
         // adds to G the edge from x to y, if it is not there
         void add_edge(int x, int y, int v);
         // removes the edge from x to y, if it is there
         void remove_edge(int x, int y);
         // returns the value associated to the edge (x,y)
-        int get_edge_value(int x, int y);
+        double get_edge_value(int x, int y);
         // sets the value associated with the edge (x,y) to v
-        void set_edge_value(int x, int y, int v);
+        void set_edge_value(int x, int y, double v);
 };
 
 #endif // GRAPH_H

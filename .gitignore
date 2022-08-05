@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Miscellaneous
+*.idea
+cmake-build-debug
+nano.save
+.vscode
